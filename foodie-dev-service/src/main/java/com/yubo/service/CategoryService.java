@@ -1,21 +1,25 @@
-package com.yubo.mapper;
+package com.yubo.service;
 
-import com.yubo.my.mapper.MyMapper;
 import com.yubo.pojo.Category;
 import com.yubo.pojo.vo.CategoryVO;
 import com.yubo.pojo.vo.NewItemsVO;
-import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
-@Mapper
-public interface CategoryMapper extends MyMapper<Category> {
+/**商品分类*/
+public interface CategoryService {
     /**
-     * 根据一级分类id查询子分类信息
-     * @param rootCatId
+     * 获取商品一级分类
      * @return
      */
-    public List<CategoryVO> getCategoryList(Integer rootCatId);
+    public List<Category> getRootCategorys();
+
+
+    /**
+     * 获取商品级分类
+     * @return
+     */
+    public List<CategoryVO> getSubCategory(Integer rootCatId);
 
     /**
      * 查询首页每个一级分类下的6条最新商品数据

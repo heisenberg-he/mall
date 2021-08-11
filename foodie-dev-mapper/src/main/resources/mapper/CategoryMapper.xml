@@ -14,4 +14,72 @@
     <result column="cat_image" property="catImage" jdbcType="VARCHAR" />
     <result column="bg_color" property="bgColor" jdbcType="VARCHAR" />
   </resultMap>
+
+
+  <resultMap id="myCategoryVO" type="com.yubo.pojo.vo.CategoryVO" >
+    <id column="id" property="id"/>
+    <result column="name" property="name"/>
+    <result column="type" property="type"/>
+    <result column="fatherId" property="fatherId"/>
+    <collection property="subCatList" ofType="com.yubo.pojo.vo.SubCategoryVO">
+      <id column="subId" property="subId"/>
+      <result column="subName" property="subName"/>
+      <result column="type" property="subType"/>
+      <result column="subFatherId" property="subFatherId"/>
+    </collection>
+  </resultMap>
+   <select id="getCategoryList" resultMap="myCategoryVO" parameterType="java.lang.Integer">
+      select
+           f.id as id,
+           f.name as name,
+           f.type as type,
+           f.father_id as fatherId,
+           s.id as subId,
+           s.name as subName,
+           s.type as subType,
+           s.father_id as subFatherId
+      from category f
+               left join category s on f.id = s.father_id
+      where f.father_id =#{rootCatId};
+   </select>
+
+
+    <resultMap id="myNewItemsVO" type="com.yubo.pojo.vo.NewItemsVO">
+        <id column="rootCatId" property="rootCatId"/>
+        <result column="rootCatName" property="rootCatName"/>
+        <result column="slogan" property="slogan"/>
+        <result column="catImage" property="catImage"/>
+        <result column="bgColor" property="bgColor"/>
+        <collection property="simpleItemList" ofType="com.yubo.pojo.vo.SimpleItemVO">
+            <id column="itemId" property="itemId"/>
+            <result column="itemName" property="itemName"/>
+            <result column="itemUrl" property="itemUrl"/>
+        </collection>
+    </resultMap>
+    <select id="getSixNewItemsLazy" resultMap="myNewItemsVO" parameterType="java.lang.Integer">
+        SELECT
+            f.id as rootCatId,
+            f.name as rootCatName,
+            f.slogan as slogan,
+            f.cat_image as catImage,
+            f.bg_color as bgColor,
+            i.id as itemId,
+            i.item_name as itemName,
+            ii.url as itemUrl,
+            i.created_time as createdTime
+        FROM
+            category f
+        LEFT JOIN items i ON f.id = i.root_cat_id
+        LEFT JOIN items_img ii ON i.id = ii.item_id
+        WHERE
+            f.type = 1
+        AND
+            i.root_cat_id = #{rootCatId}
+        AND
+            ii.is_main = 1
+        ORDER BY
+            i.created_time
+        DESC
+        LIMIT 0,6
+    </select>
 </mapper>
