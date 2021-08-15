@@ -54,3 +54,9 @@ mapper:
   identity: MYSQL
   mappers: com.yubo.my.mapper.MyMapper
   not-empty: false #在进行数据库操作的时候，判断username != null  判断帮我们自动追加username!=''
+
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
