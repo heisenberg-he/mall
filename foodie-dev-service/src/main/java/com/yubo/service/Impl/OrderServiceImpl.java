@@ -12,11 +12,16 @@ import com.yubo.pojo.vo.OrderVO;
 import com.yubo.service.AddressService;
 import com.yubo.service.ItemService;
 import com.yubo.service.OrderService;
+import com.yubo.utils.DateUtil;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class OrderServiceImpl  implements OrderService {
@@ -143,5 +148,62 @@ public class OrderServiceImpl  implements OrderService {
         orderVO.setMerchantOrdersVO(merchantOrdersVO);
 
         return orderVO;
+    }
+
+
+    /**
+     * 修改订单状态
+     * @param orderId
+     * @param orderStatus
+     */
+    @Override
+    public void updateOrderStatus(String orderId, Integer orderStatus) {
+        OrderStatus paidStatus = new OrderStatus();
+        paidStatus.setOrderId(orderId);
+        paidStatus.setOrderStatus(orderStatus);
+        paidStatus.setPayTime(new Date());
+
+        orderStatusMapper.updateByPrimaryKeySelective(paidStatus);
+    }
+
+    /**
+     * 查询订单状态
+     * @param orderId
+     * @return
+     */
+    @Override
+    public OrderStatus queryOrderStatusInfo(String orderId) {
+        return orderStatusMapper.selectByPrimaryKey(orderId);
+    }
+
+    /**
+     * 关闭超时未支付订单
+     * @param
+     * @return
+     */
+    @Override
+    public void colseOrder() {
+        Example example = new Example(OrderStatus.class);
+        Example.Criteria criteria = example.createCriteria();
+        /**查询未支付订单*/
+        criteria.andEqualTo("orderStatus",OrderStatusEnum.WAIT_PAY.type);
+        List<OrderStatus> orderStatuses = orderStatusMapper.selectByExample(example);
+        if(orderStatuses.size() > 0){
+            for (OrderStatus os : orderStatuses) {
+                int i = DateUtil.daysBetween(os.getCreatedTime(), new Date());
+                if(i >= 1){
+                    /**超过一天未支付*/
+                    this.close(os.getOrderId());
+                }
+            }
+        }
+    }
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public void close(String orderId) {
+        OrderStatus orderStatus = new OrderStatus();
+        orderStatus.setOrderId(orderId);
+        orderStatus.setCloseTime(new Date());
+        orderStatus.setOrderStatus(OrderStatusEnum.CLOSE.type);
+        orderStatusMapper.updateByPrimaryKey(orderStatus);
     }
 }
