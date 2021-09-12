@@ -1,0 +1,23 @@
+server:
+  port: 8088
+
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://101.200.88.42:3306/mall?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: hwd0221
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 20
+      auto-commit: true
+      idle-timeout: 600000
+      pool-name: DateSourceHikariCP
+      max-lifetime: 1800000
+      connection-test-query: SELECT  1
+      minimum-idle: 5
+
+app:
+  apy:
+    address: http://192.168.1.112/orders/notifyMerchantOrderPaid

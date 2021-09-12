@@ -25,6 +25,7 @@ import java.util.List;
 
 @Api(value = "地址相关",tags = {"地址相关Api"})
 @RestController
+@CrossOrigin
 @RequestMapping("address")
 public class AddressController {
 

@@ -11,6 +11,7 @@ import com.yubo.utils.IMOOCJSONResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,8 +39,10 @@ public class OrdersController {
     String paymentUrl = "http://payment.t.mukewang.com/foodie-payment/payment/createMerchantOrder";		// produce
 
     // 微信支付成功 -> 支付中心 -> 天天吃货平台
+    //
     //                       |-> 回调通知的url
-    String payReturnUrl = "http://4mbtc5.natappfree.cc/orders/notifyMerchantOrderPaid";
+    @Value("${app.pay.address}")
+    private String payReturnUrl ;
 
 
     @ApiOperation(value = "用户下单", notes = "用户下单", httpMethod = "POST")

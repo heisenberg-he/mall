@@ -5,9 +5,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class CorsConfig {
+public class CorsConfig  implements WebMvcConfigurer {
     public CorsConfig(){}
 
     @Bean
@@ -15,6 +17,9 @@ public class CorsConfig {
         // 1. 添加cors配置信息
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedOrigin("http://localhost:8080");
+        config.addAllowedOrigin("http://101.200.191.46:8080");
+        config.addAllowedOrigin("http://101.200.191.46");
+        config.addAllowedOrigin("*");
         // 设置是否发送cookie信息
         config.setAllowCredentials(true);
 
@@ -30,6 +35,19 @@ public class CorsConfig {
 
         // 3. 返回重新定义好的corsSource
         return new CorsFilter(corsSource);
+    }
+
+    /**
+     * 跨域配置后swagger2可能不能访问，需要增加如下配置
+     * @param registry
+     */
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("swagger-ui.html")
+                .addResourceLocations("classpath:/META-INF/resources/");
+        registry.addResourceHandler("/webjars/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/");
+
     }
 
 
