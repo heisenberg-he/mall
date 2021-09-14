@@ -5,7 +5,7 @@ spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://101.200.88.42:3306/mall?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://110.40.137.196:3306/mall?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
     username: root
     password: hwd0221
     hikari:
@@ -17,7 +17,3 @@ spring:
       max-lifetime: 1800000
       connection-test-query: SELECT  1
       minimum-idle: 5
-
-app:
-  apy:
-    address: http://192.168.1.112/orders/notifyMerchantOrderPaid

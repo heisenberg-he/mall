@@ -20,7 +20,6 @@ import java.util.List;
 
 @Api(value = "用户中心评价模块", tags = {"用户中心评价模块相关接口"})
 @RestController
-@CrossOrigin
 @RequestMapping("mycomments")
 public class MyCommentsController {
 

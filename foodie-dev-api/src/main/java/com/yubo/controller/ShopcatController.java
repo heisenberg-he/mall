@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Api(value = "购物车接口controller", tags = {"购物车接口相关的api"})
-@CrossOrigin
 @RequestMapping("shopcart")
 @RestController
 public class ShopcatController {

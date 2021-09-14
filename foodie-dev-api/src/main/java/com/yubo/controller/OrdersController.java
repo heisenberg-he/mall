@@ -35,14 +35,18 @@ public class OrdersController {
     private RestTemplate restTemplate;
 
 
-    // 支付中心的调用地址
-    String paymentUrl = "http://payment.t.mukewang.com/foodie-payment/payment/createMerchantOrder";		// produce
 
-    // 微信支付成功 -> 支付中心 -> 天天吃货平台
-    //
-    //                       |-> 回调通知的url
-    @Value("${app.pay.address}")
-    private String payReturnUrl ;
+    /**
+     * 支付中心的调用地址
+     */
+    String paymentUrl = "http://payment.t.mukewang.com/foodie-payment/payment/createMerchantOrder";
+
+
+    /**
+     * // 微信支付成功 -> 支付中心 -> 天天吃货平台
+     *     //-> 回调通知的url
+     */
+    private String payReturnUrl = "http://110.40.137.196:8088/foodie-dev-api/orders/notifyMerchantOrderPaid";
 
 
     @ApiOperation(value = "用户下单", notes = "用户下单", httpMethod = "POST")

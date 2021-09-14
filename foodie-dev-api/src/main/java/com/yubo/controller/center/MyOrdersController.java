@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 @Api(value = "用户中心我的订单", tags = {"用户中心我的订单相关接口"})
 @RestController
-@CrossOrigin
 @RequestMapping("myorders")
 public class MyOrdersController {
 

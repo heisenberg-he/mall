@@ -18,7 +18,6 @@ import java.util.List;
 
 @Api(value = "商城首页")
 @RestController
-@CrossOrigin
 @RequestMapping("index")
 public class IndexController {
         @Autowired

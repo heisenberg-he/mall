@@ -21,7 +21,6 @@ import java.util.List;
 
 @Api(value = "商品详情页")
 @RestController
-@CrossOrigin
 @RequestMapping("items")
 public class ItemsController {
 

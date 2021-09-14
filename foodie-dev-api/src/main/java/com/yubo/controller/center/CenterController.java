@@ -23,7 +23,6 @@ import java.util.Map;
 
 @Api(value = "center - 用户中心", tags = {"用户中心展示的相关接口"})
 @RestController
-@CrossOrigin
 @RequestMapping("center")
 public class CenterController {
 

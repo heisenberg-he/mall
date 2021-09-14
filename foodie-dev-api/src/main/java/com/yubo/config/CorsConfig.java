@@ -17,8 +17,8 @@ public class CorsConfig  implements WebMvcConfigurer {
         // 1. 添加cors配置信息
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedOrigin("http://localhost:8080");
-        config.addAllowedOrigin("http://101.200.191.46:8080");
-        config.addAllowedOrigin("http://101.200.191.46");
+        config.addAllowedOrigin("http://110.40.137.196:8080");
+        config.addAllowedOrigin("http://110.40.137.196");
         config.addAllowedOrigin("*");
         // 设置是否发送cookie信息
         config.setAllowCredentials(true);

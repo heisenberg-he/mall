@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 
 @Api(value = "用户登陆注册")
 @RestController
-@CrossOrigin
 @RequestMapping("/passport")
 public class UsersController {
     @Autowired
