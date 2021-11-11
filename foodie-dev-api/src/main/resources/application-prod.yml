@@ -22,3 +22,4 @@ spring:
     host: 110.40.137.196
     port: 6379
     timeout: 5000
+    password: hwd0221

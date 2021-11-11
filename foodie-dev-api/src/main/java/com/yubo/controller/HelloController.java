@@ -1,11 +1,9 @@
 package com.yubo.controller;
 
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("hello")
@@ -19,19 +17,19 @@ public class HelloController {
     }
 
     @GetMapping("set")
-    public String set(String key,String value){
+    public String set(@RequestParam("key") String key, @RequestParam("value") String value){
         redisTemplate.opsForValue().set(key,value);
         return "success";
     }
 
     @GetMapping("get")
-    public String get(String key){
+    public String get(@RequestParam("key") String key){
         Object o = redisTemplate.opsForValue().get(key);
         return (String)o;
     }
 
     @GetMapping("delete")
-    public String delete(String key){
+    public String delete(@RequestParam("key") String key){
         redisTemplate.delete(key);
         return "ok";
     }
