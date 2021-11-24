@@ -18,7 +18,7 @@ spring:
       connection-test-query: SELECT  1
       minimum-idle: 5
   redis:
-    database: 1
+    database: 0
     host: 110.40.137.196
     port: 6379
     timeout: 5000

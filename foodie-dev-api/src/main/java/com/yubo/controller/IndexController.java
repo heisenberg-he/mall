@@ -7,13 +7,18 @@ import com.yubo.pojo.vo.NewItemsVO;
 import com.yubo.service.CarouselService;
 import com.yubo.service.CategoryService;
 import com.yubo.utils.IMOOCJSONResult;
+import com.yubo.utils.JsonUtils;
+import com.yubo.utils.RedisOperator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Api(value = "商城首页")
@@ -26,10 +31,24 @@ public class IndexController {
         @Autowired
         private CategoryService categoryService;
 
+        @Autowired
+        private RedisOperator redisOperator ;
         @ApiOperation(value = "获取首页轮播图",notes = "获取首页轮播图",httpMethod = "GET")
         @GetMapping("/carousel")
         public IMOOCJSONResult getAll(){
-            List<Carousel> carouselList = carouselService.getAll();
+            /**
+             * 1. 后台运营系统，一旦广告（轮播图）发生更改，就可以删除缓存，然后重置
+             * 2. 定时重置，比如每天凌晨三点重置
+             * 3. 每个轮播图都有可能是一个广告，每个广告都会有一个过期时间，过期了，再重置
+             */
+            List<Carousel> carouselList = null;
+            String carouselLists = redisOperator.get("carousel");
+            if(StringUtils.isEmpty(carouselLists)) {
+                carouselList = carouselService.getAll();
+                redisOperator.set("carousel",JsonUtils.objectToJson(carouselList));
+            }else{
+                carouselList = JsonUtils.jsonToList(carouselLists,Carousel.class);
+            }
             return IMOOCJSONResult.ok(carouselList);
         }
 
@@ -41,7 +60,14 @@ public class IndexController {
         @ApiOperation(value = "加载商品分类",notes = "加载商品分类",httpMethod = "GET")
         @GetMapping("/cats")
         public IMOOCJSONResult getRootCats(){
-            List<Category> categorys = categoryService.getRootCategorys();
+            List<Category> categorys  = null;
+            String catsStr = redisOperator.get("cats");
+            if(StringUtils.isEmpty(catsStr)){
+                categorys = categoryService.getRootCategorys();
+                redisOperator.set("cats",JsonUtils.objectToJson(categorys));
+            }else{
+                categorys = JsonUtils.jsonToList(catsStr,Category.class);
+            }
             return IMOOCJSONResult.ok(categorys);
         }
 
