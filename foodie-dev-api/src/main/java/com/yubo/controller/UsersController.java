@@ -2,18 +2,22 @@ package com.yubo.controller;
 
 import com.yubo.pojo.Users;
 import com.yubo.pojo.bo.UserBO;
+import com.yubo.pojo.vo.UsersVO;
 import com.yubo.service.UserService;
 import com.yubo.utils.CookieUtils;
 import com.yubo.utils.IMOOCJSONResult;
 import com.yubo.utils.JsonUtils;
+import com.yubo.utils.RedisOperator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.UUID;
 
 @Api(value = "用户登陆注册")
 @RestController
@@ -21,6 +25,11 @@ import javax.servlet.http.HttpServletResponse;
 public class UsersController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RedisOperator redisOperator;
+
+    private String str = "REDIS_USER_TOKEN";
 
     /**
      * 判断用户名是否存在
@@ -46,7 +55,9 @@ public class UsersController {
      */
     @ApiOperation(value = "用户注册",notes = "用户注册",httpMethod = "POST")
     @PostMapping("/regist")
-    public IMOOCJSONResult createUser(@RequestBody UserBO userBO){
+    public IMOOCJSONResult createUser(@RequestBody UserBO userBO,
+                                      HttpServletRequest request,
+                                      HttpServletResponse response){
         String username = userBO.getUsername();
         String password = userBO.getPassword();
         String confirmPwd = userBO.getConfirmPassword();
@@ -75,9 +86,13 @@ public class UsersController {
         // 4. 实现注册
         Users userResult = userService.createUser(userBO);
 
-        // TODO 生成用户token，存入redis会话
-        // TODO 同步购物车数据
-
+        // 生成用户token，存入redis会话
+        String uniqueToken = UUID.randomUUID().toString().trim();
+        redisOperator.set(str+":"+userResult.getId(),uniqueToken);
+        UsersVO usersVO = new UsersVO();
+        BeanUtils.copyProperties(userResult, usersVO);
+        usersVO.setUserUniqueToken(uniqueToken);
+        CookieUtils.setCookie(request,response,"user",JsonUtils.objectToJson(usersVO),true);
         return IMOOCJSONResult.ok();
     }
 
@@ -96,10 +111,14 @@ public class UsersController {
         if(userLogin == null){
             return new IMOOCJSONResult("用户名或密码错误");
         }
-        userLogin = setNullProperty(userLogin);
-
+        // 生成用户token，存入redis会话
+        String uniqueToken = UUID.randomUUID().toString().trim();
+        redisOperator.set(str+":"+userLogin.getId(),uniqueToken);
+        UsersVO usersVO = new UsersVO();
+        BeanUtils.copyProperties(userLogin, usersVO);
+        usersVO.setUserUniqueToken(uniqueToken);
         CookieUtils.setCookie(request, response, "user",
-                JsonUtils.objectToJson(userLogin), true);
+                JsonUtils.objectToJson(usersVO), true);
 
         return new IMOOCJSONResult(userLogin);
     }
@@ -113,19 +132,9 @@ public class UsersController {
         // 清除用户的相关信息的cookie
         CookieUtils.deleteCookie(request, response, "user");
 
-        // TODO 用户退出登录，需要清空购物车
-        // TODO 分布式会话中需要清除用户数据
-
+        //  用户退出登录，需要清空购物车
+        //  分布式会话中需要清除用户数据
+        redisOperator.del(str+":"+userId);
         return IMOOCJSONResult.ok();
-    }
-
-    private Users setNullProperty(Users userResult) {
-        userResult.setPassword(null);
-        userResult.setMobile(null);
-        userResult.setEmail(null);
-        userResult.setCreatedTime(null);
-        userResult.setUpdatedTime(null);
-        userResult.setBirthday(null);
-        return userResult;
     }
 }

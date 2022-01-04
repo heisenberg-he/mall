@@ -73,7 +73,7 @@ public class UserserviceImpl  implements UserService {
 
         usersMapper.insert(user);
 
-        return null ;
+        return user ;
     }
 
     /**
